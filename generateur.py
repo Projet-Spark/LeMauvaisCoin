@@ -10,6 +10,16 @@ VILLES      = ["Paris", "Lyon", "Marseille", "Bordeaux", "Lille", "Toulouse", "N
 CATEGORIES  = ["Véhicules", "Électronique", "Mode", "Maison", "Sport","Jardin", "Jeux vidéo", "Livres", "Beauté","Bricolage", "Musique", "Alimentation"]
 ACTIONS     = ["AIME", "VOUT", "ACHAT"]
 
+@dataclass
+class Event:
+    timestamp:   str
+    user_id:     str
+    user_city:   str
+    product_id:  str
+    product_cat: str
+    seller_id:   str
+    action_type: str 
+    price:       float
     
 
 def launch_server():
@@ -28,19 +38,6 @@ def launch_server():
                 header = struct.pack(">I", len(json_event))
                 clientsocket.sendall(header + json_event + b"\n")
                 sleep(3)
-
-
-
-@dataclass
-class Event:
-    timestamp:   str
-    user_id:     str
-    user_city:   str
-    product_id:  str
-    product_cat: str
-    seller_id:   str
-    action_type: str 
-    price:       float
 
 
 def generate_event() -> Event:
