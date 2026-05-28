@@ -1,30 +1,30 @@
 import dataclasses
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import from_json, col
-from pyspark.sql.types import StructType, StructField, StringType, FloatType
-from generateur import Event
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType
 
-SPARK_TYPE_MAP = {str: StringType(), float: FloatType()}
+EVENT_SCHEMA = StructType([
+    StructField("timestamp",   StringType()),
+    StructField("user_id",     StringType()),
+    StructField("user_city",   StringType()),
+    StructField("product_id",  StringType()),
+    StructField("product_cat", StringType()),
+    StructField("seller_id",   StringType()),
+    StructField("action_type", StringType()),
+    StructField("price",       DoubleType()),
+])
+def startSpark() -> SparkSession:
+    spark = SparkSession.builder \
+        .appName("LeMauvaisCoin") \
+        .master("local[*]") \
+        .config("spark.sql.shuffle.partitions", "4") \
+        .config("spark.driver.memory", "2g") \
+        .getOrCreate()
+    spark.sparkContext.setLogLevel("WARN")   
+    return spark 
 
-def dataclass_to_spark_schema(dc):
-    return StructType([
-        StructField(f.name, SPARK_TYPE_MAP[f.type])
-        for f in dataclasses.fields(dc)
-    ])
 
-spark = SparkSession.builder.appName("LeMauvaisCoin").getOrCreate()
-
-from pyspark.sql import SparkSession
-spark = SparkSession.builder \
-    .appName("StreamingApp") \
-    .master("local[*]") \
-    .config("spark.sql.shuffle.partitions", "4") \
-    .config("spark.driver.memory", "2g") \
-    .getOrCreate()
-
-spark.sparkContext.setLogLevel("WARN")    
-
-def getTcpData():
+def getTcpData(spark: SparkSession):
     lines = spark \
         .readStream \
         .format("socket") \
@@ -32,5 +32,4 @@ def getTcpData():
         .option("port", 9999) \
         .load()
 
-    schema = dataclass_to_spark_schema(Event)
-    return lines.select(from_json(col("value"), schema).alias("data")).select("data.*")
+    return lines.select(from_json(col("value"), EVENT_SCHEMA).alias("data")).select("data.*")
