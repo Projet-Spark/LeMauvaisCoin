@@ -22,7 +22,7 @@ class Event:
     price:       float
     
 
-def launch_server():
+def launchServer():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('localhost', 9999))
     s.listen()
@@ -33,14 +33,14 @@ def launch_server():
         with clientsocket:
             print(f"connecté par {address}")
             while True:
-                event = generate_event()
+                event = generateEvent()
                 json_event = json.dumps(event.__dict__).encode("utf-8")
                 header = struct.pack(">I", len(json_event))
                 clientsocket.sendall(header + json_event + b"\n")
                 sleep(3)
 
 
-def generate_event() -> Event:
+def generateEvent() -> Event:
         return Event(
             timestamp   = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             user_id     = f"usr_{random.randint(1000, 9999)}",
@@ -53,4 +53,4 @@ def generate_event() -> Event:
         )
 
 if __name__ == "__main__":
-    launch_server()
+    launchServer()
