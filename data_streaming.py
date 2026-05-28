@@ -14,6 +14,16 @@ def dataclass_to_spark_schema(dc):
 
 spark = SparkSession.builder.appName("LeMauvaisCoin").getOrCreate()
 
+from pyspark.sql import SparkSession
+spark = SparkSession.builder \
+    .appName("StreamingApp") \
+    .master("local[*]") \
+    .config("spark.sql.shuffle.partitions", "4") \
+    .config("spark.driver.memory", "2g") \
+    .getOrCreate()
+
+spark.sparkContext.setLogLevel("WARN")    
+
 def getTcpData():
     lines = spark \
         .readStream \
