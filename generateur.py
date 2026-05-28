@@ -1,6 +1,14 @@
 import socket
 import json
 import struct
+import random
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from time import sleep
+
+VILLES      = ["Paris", "Lyon", "Marseille", "Bordeaux", "Lille", "Toulouse", "Nantes", "Strasbourg", "Nice", "Rennes", "Montpellier", "Grenoble", "Toulon", "Dijon", "Angers"]
+CATEGORIES  = ["Véhicules", "Électronique", "Mode", "Maison", "Sport","Jardin", "Jeux vidéo", "Livres", "Beauté","Bricolage", "Musique", "Alimentation"]
+ACTIONS     = ["AIME", "VOUT", "ACHAT"]
 
     
 
@@ -18,17 +26,10 @@ def launch_server():
                 event = generate_event()
                 json_event = json.dumps(event.__dict__).encode("utf-8")
                 header = struct.pack(">I", len(json_event))
-                clientsocket.sendall(header + json_event)
+                clientsocket.sendall(header + json_event + b"\n")
+                sleep(3)
 
 
-
-if __name__ == "__main__":
-    launch_server()
-
-import random
-from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Generator
 
 @dataclass
 class Event:
@@ -41,13 +42,9 @@ class Event:
     action_type: str 
     price:       float
 
-VILLES      = ["Paris", "Lyon", "Marseille", "Bordeaux", "Lille", "Toulouse", "Nantes", "Strasbourg", "Nice", "Rennes", "Montpellier", "Grenoble", "Toulon", "Dijon", "Angers"]
-CATEGORIES  = ["Véhicules", "Électronique", "Mode", "Maison", "Sport","Jardin", "Jeux vidéo", "Livres", "Beauté","Bricolage", "Musique", "Alimentation"]
-ACTIONS     = ["AIME", "VOUT", "ACHAT"]
 
-def generateur_evenements(n: int):
-    for i in range(n):
-        yield Event(
+def generate_event() -> Event:
+        return Event(
             timestamp   = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             user_id     = f"usr_{random.randint(1000, 9999)}",
             user_city   = random.choice(VILLES),
@@ -57,3 +54,6 @@ def generateur_evenements(n: int):
             action_type = random.choice(ACTIONS),
             price       = round(random.uniform(5.0, 2000.0), 2),
         )
+
+if __name__ == "__main__":
+    launch_server()
