@@ -1,10 +1,10 @@
 import dataclasses
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import from_json, col
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
 
 EVENT_SCHEMA = StructType([
-    StructField("timestamp",   StringType()),
+    StructField("timestamp",   TimestampType()),
     StructField("user_id",     StringType()),
     StructField("user_city",   StringType()),
     StructField("product_id",  StringType()),
@@ -24,7 +24,7 @@ def startSpark() -> SparkSession:
     return spark 
 
 
-def getTcpData(spark: SparkSession):
+def getTcpData(spark: SparkSession) -> DataFrame:
     lines = spark \
         .readStream \
         .format("socket") \
@@ -32,4 +32,4 @@ def getTcpData(spark: SparkSession):
         .option("port", 9999) \
         .load()
 
-    return lines.select(from_json(col("value"), EVENT_SCHEMA).alias("data")).select("data.*")
+    return lines.select(from_json(col("value"), EVENT_SCHEMA).alias("data")).select("data.*").withWatermark("timestamp", "5 minutes")
