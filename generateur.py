@@ -1,6 +1,5 @@
 import socket
 import json
-import struct
 import random
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -22,11 +21,14 @@ class Event:
     price:       float
     
 
-def launchServer():
+def launchServer(ready_event=None):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind(('localhost', 9999))
     s.listen()
     print("Serveur en écoute...")
+    if ready_event:
+        ready_event.set()
 
     while True:
         (clientsocket, address) = s.accept()
@@ -35,9 +37,8 @@ def launchServer():
             while True:
                 event = generateEvent()
                 json_event = json.dumps(event.__dict__).encode("utf-8")
-                header = struct.pack(">I", len(json_event))
-                clientsocket.sendall(header + json_event + b"\n")
-                sleep(3)
+                clientsocket.sendall(json_event + b"\n")
+                sleep(0.5)
 
 
 def generateEvent() -> Event:

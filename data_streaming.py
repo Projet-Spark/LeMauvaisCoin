@@ -1,4 +1,3 @@
-import dataclasses
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import from_json, col
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
@@ -13,6 +12,7 @@ EVENT_SCHEMA = StructType([
     StructField("action_type", StringType()),
     StructField("price",       DoubleType()),
 ])
+
 def startSpark() -> SparkSession:
     spark = SparkSession.builder \
         .appName("LeMauvaisCoin") \
