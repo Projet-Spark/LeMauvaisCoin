@@ -10,6 +10,9 @@ if __name__ == "__main__":
     server_thread.start()
     ready.wait()
 
+    dash_thread = threading.Thread(target=app.run, daemon=True)
+    dash_thread.start()
+
     spark = startSpark()
     df = getTcpData(spark)
     aggregated_df = getAggregatedData(df)
