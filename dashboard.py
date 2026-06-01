@@ -18,8 +18,13 @@ app.layout = html.Div(children=[
 
     cyto.Cytoscape(
         id='cytoscape-visualization',
-        layout={'name': 'cose'},
-        style={'width': '100%', 'height': '400px'},
+        layout={
+            'name': 'cose',
+            'nodeRepulsion': 8000,
+            'idealEdgeLength': 100,   
+            'nodeOverlap': 20          
+        },
+        style={'width': '100%', 'height': '100vh'},
         elements=[],
         stylesheet=[
             {
@@ -41,21 +46,27 @@ app.layout = html.Div(children=[
                 }
             },
             {
-                'selector': '[label = "ACHAT"]',
+                'selector': 'edge[label = "ACHAT"]',
                 'style': {
-                    'background-color': 'yellow'
+                    'line-color': 'red'
                 }
             },
             {
-                'selector': '[label = "VOUT"]',
+                'selector': 'edge[label = "VOUT"]',
                 'style': {
-                    'background-color': 'orange'
+                    'line-color': 'orange'
                 }
             },
             {
-                'selector': '[label = "AIME"]',
+                'selector': 'edge[label = "AIME"]',
                 'style': {
-                    'background-color': 'red'
+                    'line-color': 'yellow'
+                }
+            },
+            {
+                'selector': 'edge[label = "PROPOSE"]',
+                'style': {
+                    'line-color': 'brown'
                 }
             }
         ]

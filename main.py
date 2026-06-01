@@ -2,7 +2,7 @@ import threading
 from generateur import launchServer
 from data_streaming import startSpark, getTcpData
 from data_transformation import getAggregatedData, processGraphBatch 
-# from dashboard import 
+from dashboard import app
 
 if __name__ == "__main__":
     ready = threading.Event()

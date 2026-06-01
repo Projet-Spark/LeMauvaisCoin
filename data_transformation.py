@@ -16,16 +16,17 @@ def getGraphFrame(raw_df):
     product_df = raw_df.select("product_id").distinct().withColumnRenamed("product_id", "id").withColumn("type", lit("PRODUCT"))
     vertice_df = user_df.union(product_df).union(seller_df)
 
-    user_actions = raw_df.filter(raw_df.action_type != "ACHAT") \
+    user_product = raw_df \
         .select(raw_df.user_id.alias("src"), raw_df.product_id.alias("dst"), raw_df.action_type.alias("relation"))
 
-    seller_actions = raw_df.filter(raw_df.action_type == "ACHAT") \
+    user_seller = raw_df.filter(raw_df.action_type == "ACHAT") \
         .select(raw_df.user_id.alias("src"), raw_df.seller_id.alias("dst"), raw_df.action_type.alias("relation"))
+    
+    seller_product = raw_df \
+        .select(raw_df.seller_id.alias("src"), raw_df.product_id.alias("dst"), lit("PROPOSE").alias("relation")
+)
 
-    product_actions = raw_df.filter(raw_df.action_type == "ACHAT") \
-        .select(raw_df.user_id.alias("src"), raw_df.product_id.alias("dst"), raw_df.action_type.alias("relation"))
-
-    edges_df = user_actions.union(seller_actions).union(product_actions)
+    edges_df = user_product.union(user_seller).union(seller_product)
 
     return GraphFrame(vertice_df, edges_df)
 
