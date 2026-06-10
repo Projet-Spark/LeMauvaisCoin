@@ -45,7 +45,7 @@ app.layout = html.Div(style={'display': 'flex', 'height': '100vh', 'flexDirectio
             html.Hr(),
 
             html.H3('Actions (fenêtre 1 min)', style={'fontSize': '13px', 'textTransform': 'uppercase', 'color': '#555'}),
-            dcc.Graph(id='action-bar-chart', style={'height': '160px'}, config={'displayModeBar': False}),
+            dcc.Graph(id='action-bar-chart', config={'displayModeBar': False}),
 
             html.Hr(),
 
@@ -188,11 +188,12 @@ def update_action_chart(_):
         marker_color=[colors[a] for a in actions],
     ))
     fig.update_layout(
-        margin=dict(l=10, r=10, t=10, b=10),
+        height=150,
+        margin=dict(l=10, r=10, t=10, b=30),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(size=10),
-        yaxis=dict(gridcolor="#ddd"),
+        yaxis=dict(gridcolor="#ddd", rangemode="tozero"),
     )
     return fig
 
