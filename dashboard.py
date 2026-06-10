@@ -1,5 +1,6 @@
 from dash import Dash, html, dcc, Output, Input
 import dash_cytoscape as cyto
+import plotly.graph_objects as go
 import state
 
 app = Dash("LeMauvaisCoin")
@@ -40,6 +41,11 @@ app.layout = html.Div(style={'display': 'flex', 'height': '100vh', 'flexDirectio
 
             html.H3('Top 5 PageRank', style={'fontSize': '13px', 'textTransform': 'uppercase', 'color': '#555'}),
             html.Div(id='pagerank-table'),
+
+            html.Hr(),
+
+            html.H3('Actions (fenêtre 1 min)', style={'fontSize': '13px', 'textTransform': 'uppercase', 'color': '#555'}),
+            dcc.Graph(id='action-bar-chart', style={'height': '160px'}, config={'displayModeBar': False}),
 
             html.Hr(),
 
@@ -166,6 +172,29 @@ def display_node_info(data):
         html.Div(f'Degré total :    {data.get("degree", 0)}'),
         html.Div(f'PageRank :       {data.get("pagerank", 0.0):.4f}'),
     ])
+
+
+@app.callback(
+    Output("action-bar-chart", "figure"),
+    Input("interval", "n_intervals")
+)
+def update_action_chart(_):
+    counts = state.action_counts
+    actions = ["AIME", "VOUT", "ACHAT"]
+    colors = {"AIME": "#ffeb3b", "VOUT": "#ff9800", "ACHAT": "#e53935"}
+    fig = go.Figure(go.Bar(
+        x=actions,
+        y=[counts.get(a, 0) for a in actions],
+        marker_color=[colors[a] for a in actions],
+    ))
+    fig.update_layout(
+        margin=dict(l=10, r=10, t=10, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(size=10),
+        yaxis=dict(gridcolor="#ddd"),
+    )
+    return fig
 
 
 @app.callback(

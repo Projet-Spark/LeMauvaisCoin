@@ -5,10 +5,17 @@ from graphframes import GraphFrame
 
 def getAggregatedData(df: DataFrame):
     return df \
+        .withWatermark("timestamp", "30 seconds") \
         .groupBy(
         window(df.timestamp, "1 minute", "30 seconds"),
         df.action_type) \
         .agg(count("*").alias("action_count"), sum("price").alias("total_price"))
+
+def processWindowBatch(batch_df, _batch_id):
+    if batch_df.isEmpty():
+        return
+    for row in batch_df.collect():
+        state.action_counts[row["action_type"]] = row["action_count"]
 
 def getGraphFrame(raw_df):
     user_df = raw_df.select("user_id").distinct() \

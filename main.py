@@ -1,7 +1,7 @@
 import threading
 from generateur import launchServer
 from data_streaming import startSpark, getTcpData
-from data_transformation import getAggregatedData, processGraphBatch 
+from data_transformation import getAggregatedData, processWindowBatch, processGraphBatch
 from dashboard import app
 
 if __name__ == "__main__":
@@ -18,21 +18,13 @@ if __name__ == "__main__":
     aggregated_df = getAggregatedData(df)
     query1 = aggregated_df.writeStream \
         .outputMode("update") \
-        .format("console") \
-        .option("truncate", False) \
+        .foreachBatch(processWindowBatch) \
         .trigger(processingTime="5 seconds") \
         .start()
-    
-    query2 = df.writeStream \
-    .foreachBatch(processGraphBatch) \
-    .trigger(processingTime="5 seconds") \
-    .start()
 
-    # query2 = df.writeStream \
-    #     .outputMode("update") \
-    #     .format("console") \
-    #     .option("truncate", False) \
-    #     .trigger(processingTime="5 seconds") \
-    #     .start()
+    query2 = df.writeStream \
+        .foreachBatch(processGraphBatch) \
+        .trigger(processingTime="5 seconds") \
+        .start()
 
     spark.streams.awaitAnyTermination()
