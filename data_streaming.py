@@ -13,6 +13,7 @@ EVENT_SCHEMA = StructType([
     StructField("price",       DoubleType()),
 ])
 
+# Aymeric
 def startSpark() -> SparkSession:
     spark = SparkSession.builder \
         .appName("LeMauvaisCoin") \
@@ -24,7 +25,7 @@ def startSpark() -> SparkSession:
     spark.sparkContext.setLogLevel("WARN")   
     return spark 
 
-
+# Aymeric
 def getTcpData(spark: SparkSession) -> DataFrame:
     lines = spark \
         .readStream \
@@ -33,4 +34,4 @@ def getTcpData(spark: SparkSession) -> DataFrame:
         .option("port", 9999) \
         .load()
 
-    return lines.select(from_json(col("value"), EVENT_SCHEMA).alias("data")).select("data.*").withWatermark("timestamp", "5 minutes")
+    return lines.select(from_json(col("value"), EVENT_SCHEMA).alias("data")).select("data.*")

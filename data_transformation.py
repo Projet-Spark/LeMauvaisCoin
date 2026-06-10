@@ -14,8 +14,8 @@ def getAggregatedData(df: DataFrame):
 def processWindowBatch(batch_df, _batch_id):
     if batch_df.isEmpty():
         return
-    for row in batch_df.collect():
-        state.action_counts[row["action_type"]] = row["action_count"]
+    for row in batch_df.groupBy("action_type").agg(sum("action_count").alias("total")).collect():
+        state.action_counts[row["action_type"]] = state.action_counts.get(row["action_type"], 0) + row["total"]
 
 def getGraphFrame(raw_df):
     user_df = raw_df.select("user_id").distinct() \

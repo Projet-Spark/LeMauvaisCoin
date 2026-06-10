@@ -20,7 +20,7 @@ class Event:
     action_type: str 
     price:       float
     
-
+# Ewan
 def launchServer(ready_event=None):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

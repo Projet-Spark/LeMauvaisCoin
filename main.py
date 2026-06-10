@@ -19,6 +19,7 @@ if __name__ == "__main__":
     query1 = aggregated_df.writeStream \
         .outputMode("update") \
         .foreachBatch(processWindowBatch) \
+        .option("checkpointLocation", "/tmp/checkpoint_window") \
         .trigger(processingTime="5 seconds") \
         .start()
 
