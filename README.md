@@ -346,12 +346,3 @@ Les métriques suivantes ont été relevées via le Spark UI (`http://localhost:
 **Durée stable** (~2,5s) vs trigger (5s) : la marge de ~2,5s par batch représente 50% de capacité inutilisée. Cela laisse de la place pour absorber un pic de charge ou pour augmenter `maxIter` du PageRank sans risquer de dépasser le trigger.
 
 **Operation Duration** : la décomposition par opération montre que GraphFrames (construction + PageRank) représente la majorité de la durée de traitement. Le coût du PageRank avec `maxIter=5` est acceptable en régime stable (~1,5s sur les ~2,5s totales).
-
----
-
-## Limitations connues
-
-- Le calcul de PageRank avec `maxIter=5` est une approximation volontaire pour rester dans les contraintes temps réel de chaque micro-batch. Pour des résultats plus précis, augmenter `maxIter` au détriment de la latence.
-- L'état partagé via `state.py` (variables globales Python) est adapté à une exécution mono-machine. Pour un déploiement distribué, remplacer par un store externe (Redis, Kafka, base de données).
-- La source socket TCP (`localhost:9999`) est destinée à la démonstration. En production, utiliser une source Kafka ou Kinesis.
-- Le mode `local[*]` de Spark utilise tous les coeurs disponibles sur la machine locale. Ne pas déployer en mode cluster sans adapter la configuration réseau et les paramètres de partitionnement.
