@@ -62,7 +62,7 @@ app.layout = html.Div(style={'display': 'flex', 'height': '100vh', 'flexDirectio
         ]),
 
         # --- Graph ---
-        cyto.Cytoscape(
+        cyto.Cytoscape( 
             id='cytoscape-visualization',
             layout={
                 'name': 'cose',

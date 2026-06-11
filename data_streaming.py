@@ -13,7 +13,7 @@ EVENT_SCHEMA = StructType([
     StructField("price",       DoubleType()),
 ])
 
-# Aymeric
+
 def startSpark() -> SparkSession:
     spark = SparkSession.builder \
         .appName("LeMauvaisCoin") \
@@ -25,7 +25,7 @@ def startSpark() -> SparkSession:
     spark.sparkContext.setLogLevel("WARN")   
     return spark 
 
-# Aymeric
+
 def getTcpData(spark: SparkSession) -> DataFrame:
     lines = spark \
         .readStream \
